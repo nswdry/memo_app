@@ -1,0 +1,33 @@
+# frozen_string_literal: true
+
+require 'webrick'
+require 'sinatra'
+require 'sinatra/reloader'
+require 'sinatra/content_for'
+require 'json'
+require 'erb'
+
+helpers do
+  include ERB::Util
+end
+
+def load_memos
+  JSON.parse(File.read('memos.json'))
+end
+
+def save_memos(memos)
+  File.write('memos.json', JSON.pretty_generate(memos))
+end
+
+def find_memo(memos, id)
+  memos.find { it['id'] == id.to_i }
+end
+
+get '/' do
+  redirect '/memos'
+end
+
+get '/memos' do
+  memos = load_memos
+  erb :index, locals: { memos: memos }
+end
