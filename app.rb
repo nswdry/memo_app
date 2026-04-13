@@ -43,6 +43,13 @@ get '/memos/:id' do
   erb :show, locals: { memo: memo }
 end
 
+get '/memos/:id/edit' do
+  memos = load_memos
+  memo = find_memo(memos, params[:id])
+  halt 404 unless memo
+  erb :edit, locals: { memo: memo }
+end
+
 post '/memos' do
   title = params['title']
   content = params['content']
@@ -54,4 +61,16 @@ post '/memos' do
   save_memos(memos)
 
   redirect '/memos'
+end
+
+patch '/memos/:id' do
+  memos = load_memos
+  memo = find_memo(memos, params[:id])
+  halt 404 unless memo
+
+  memo['title'] = params[:title]
+  memo['content'] = params[:content]
+  save_memos(memos)
+
+  redirect "/memos/#{memo['id']}"
 end
