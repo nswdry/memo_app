@@ -1,0 +1,13 @@
+<p class="memo-title"><%= h(memo['title']) %></p>
+<p class="memo-content"><%= h(memo['content']) %></p>
+
+<div class="grid">
+  <form action="/memos/<%= h(memo['id']) %>/edit" method="get">
+    <button type="submit">編集</button>
+  </form>
+
+  <form action="/memos/<%= h(memo['id']) %>" method="post">
+    <input type="hidden" name="_method" value="delete">
+    <button type="submit">削除</button>
+  </form>
+</div>

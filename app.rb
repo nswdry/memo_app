@@ -36,6 +36,13 @@ get '/memos/new' do
   erb :new
 end
 
+get '/memos/:id' do
+  memos = load_memos
+  memo = find_memo(memos, params[:id])
+  halt 404 unless memo
+  erb :show, locals: { memo: memo }
+end
+
 post '/memos' do
   title = params['title']
   content = params['content']
