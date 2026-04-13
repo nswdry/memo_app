@@ -31,3 +31,20 @@ get '/memos' do
   memos = load_memos
   erb :index, locals: { memos: memos }
 end
+
+get '/memos/new' do
+  erb :new
+end
+
+post '/memos' do
+  title = params['title']
+  content = params['content']
+
+  memos = load_memos
+  id = memos.map { |memo| memo['id'] }.max.to_i + 1
+
+  memos << { 'id' => id, 'title' => title, 'content' => content }
+  save_memos(memos)
+
+  redirect '/memos'
+end
