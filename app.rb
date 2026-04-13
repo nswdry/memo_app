@@ -74,3 +74,13 @@ patch '/memos/:id' do
 
   redirect "/memos/#{memo['id']}"
 end
+
+delete '/memos/:id' do
+  memos = load_memos
+
+  memos.reject! { |m| m['id'] == params[:id].to_i }
+
+  save_memos(memos)
+
+  redirect '/memos'
+end
