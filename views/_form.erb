@@ -1,0 +1,13 @@
+<form action="<%= h(action) %>" method="post">
+  <% if method != 'post' %>
+    <input type="hidden" name="_method" value="<%= h(method) %>">
+  <% end %>
+
+  <input type="text" class="memo-title" name="title" placeholder="タイトル" value="<%= h(title) %>">
+
+  <textarea class="memo-content" rows="10" name="content" placeholder="内容"><%= h(content) %></textarea>
+
+  <div class="actions">
+    <button type="submit"><%= h(button_text) %></button>
+  </div>
+</form>

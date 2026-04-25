@@ -1,0 +1,20 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.add-button {
+  padding: 0.75rem 3rem;
+}
+
+.grid {
+  margin: 3rem 0;
+}
+
+.memo-content {
+  white-space: pre-wrap;
+  min-height: 3lh;
+  margin-bottom: 3rem;
+}

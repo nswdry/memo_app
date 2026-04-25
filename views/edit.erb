@@ -1,0 +1,7 @@
+<%= erb :_form, locals: {
+  action: "/memos/#{memo['id']}",
+  method: 'patch',
+  title: memo['title'],
+  content: memo['content'],
+  button_text: '変更'
+} %>
