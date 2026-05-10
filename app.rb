@@ -6,21 +6,29 @@ require 'sinatra/reloader'
 require 'sinatra/content_for'
 require 'json'
 require 'erb'
+require 'pg'
+
+DB = PG.connect(dbname: 'memo_app')
+
+DB.exec <<~SQL
+  CREATE TABLE IF NOT EXISTS memos (
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    title TEXT NOT NULL,
+    content TEXT NOT NULL
+  )
+SQL
 
 helpers do
   include ERB::Util
 end
 
 def load_memos
-  JSON.parse(File.read('memos.json'))
+  DB.exec('SELECT * FROM memos')
 end
 
-def save_memos(memos)
-  File.write('memos.json', JSON.pretty_generate(memos))
-end
-
-def find_memo(memos, id)
-  memos.find { it['id'] == id.to_i }
+def find_memo(id)
+  result = DB.exec_params('SELECT * FROM memos WHERE id = $1', [id])
+  result.first
 end
 
 get '/' do
@@ -37,15 +45,13 @@ get '/memos/new' do
 end
 
 get '/memos/:id' do
-  memos = load_memos
-  memo = find_memo(memos, params[:id])
+  memo = find_memo(params[:id])
   halt 404 unless memo
   erb :show, locals: { memo: memo }
 end
 
 get '/memos/:id/edit' do
-  memos = load_memos
-  memo = find_memo(memos, params[:id])
+  memo = find_memo(params[:id])
   halt 404 unless memo
   erb :edit, locals: { memo: memo }
 end
@@ -54,33 +60,23 @@ post '/memos' do
   title = params['title']
   content = params['content']
 
-  memos = load_memos
-  id = memos.map { |memo| memo['id'] }.max.to_i + 1
-
-  memos << { 'id' => id, 'title' => title, 'content' => content }
-  save_memos(memos)
+  DB.exec_params('INSERT INTO memos (title, content) VALUES ($1, $2)', [title, content])
 
   redirect '/memos'
 end
 
 patch '/memos/:id' do
-  memos = load_memos
-  memo = find_memo(memos, params[:id])
+  memo = find_memo(params[:id])
   halt 404 unless memo
 
-  memo['title'] = params[:title]
-  memo['content'] = params[:content]
-  save_memos(memos)
+  DB.exec_params('UPDATE memos SET title = $1, content = $2 WHERE id = $3',
+                 [params[:title], params[:content], params[:id]])
 
   redirect "/memos/#{memo['id']}"
 end
 
 delete '/memos/:id' do
-  memos = load_memos
-
-  memos.reject! { |m| m['id'] == params[:id].to_i }
-
-  save_memos(memos)
+  DB.exec_params('DELETE FROM memos WHERE id = $1', [params[:id]])
 
   redirect '/memos'
 end
