@@ -9,7 +9,7 @@
 
 - メモの一覧表示
 - メモの新規作成
-- メモの編集
+- メモの編集q
 - メモの削除
 
 ## インストール方法
@@ -17,7 +17,7 @@
 1. 任意のディレクトリにてリポジトリをクローンします。
 
 ```bash
-$ git clone -b develop https://github.com/nswdry/memo_app.git
+$ git clone -b feature/add-postgresql https://github.com/nswdry/memo_app.git
 ```
 
 2. ディレクトリに移動します。
@@ -26,10 +26,24 @@ $ git clone -b develop https://github.com/nswdry/memo_app.git
 $ cd memo_app
 ```
 
-3. 必要なgemをインストールします。
+3. PostgreSQLをインストールし、起動させます。
+
+```bash
+$ brew install postgresql
+
+$ brew services start postgresql
+```
+
+4. 必要なgemをインストールします。
 
 ```bash
 $ bundle install
+```
+
+5. DBを作成します。
+
+```bash
+$ createdb memo_app
 ```
 
 ## 使用技術
@@ -37,6 +51,7 @@ $ bundle install
 - Ruby 3.4.8
 - Sinatra
 - WEBrick
+- PostgreSQL
 
 ## アプリの起動
 
@@ -54,3 +69,13 @@ $ bundle exec ruby app.rb
 1. 「追加」ボタンからメモを新規作成
 2. 各メモの「編集」ボタンで内容を変更
 3. 各メモの「削除」ボタンでメモを削除
+
+## DDL文
+
+```sql
+CREATE TABLE IF NOT EXISTS memos (
+  id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  title TEXT NOT NULL,
+  content TEXT NOT NULL
+);
+```
